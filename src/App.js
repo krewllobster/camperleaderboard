@@ -12,12 +12,15 @@ class App extends Component {
     this.state = {
       loading: false,
       results: {recent: [], all: []},
+      selected: 'recent',
+      current: [],
     }
 
     this.recentPromise = this.recentPromise.bind(this);
     this.allPromise = this.allPromise.bind(this);
     this.setResults = this.setResults.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   recentPromise = () => fetch(`${BASE_URL}/recent`);
@@ -26,8 +29,9 @@ class App extends Component {
   setResults(values) {
     this.setState({
       loading: false,
-      sort: 'recent',
-      results: {recent: values[0], all: values[1]}
+      selected: 'recent',
+      results: {recent: values[0], alltime: values[1]},
+      current: values[0],
     })
   }
 
@@ -40,6 +44,13 @@ class App extends Component {
       ).then(texts => this.setResults(texts))
   }
 
+  onChange(event) {
+    const curr = this.state.results[event.target.value]
+    this.setState({
+      selected: event.target.value,
+      current: curr,
+    })
+  }
 
   componentDidMount() {
     this.fetchResults();
@@ -47,13 +58,42 @@ class App extends Component {
 
   render() {
 
-    const {loading, results} = this.state;
+    const {loading, selected, current} = this.state;
 
     return (
-
-      <Table results = {results} />
+      <div className = "container">
+        <Buttons onChange = {this.onChange} selected = {selected}/>
+        <Table results = {current} />
+      </div>
     );
   }
+}
+
+const Buttons = ({selected, onChange}) => {
+  return (
+    <div>
+      <form>
+        <label class="radio-inline">
+          <input
+            type="radio"
+            value="recent"
+            name="optradio"
+            checked={selected === 'recent'}
+            onChange = {onChange}
+          />Recent
+        </label>
+        <label class="radio-inline">
+          <input
+            type="radio"
+            value = "alltime"
+            name="optradio"
+            checked={selected === 'alltime'}
+            onChange = {onChange}
+          />All Time
+        </label>
+      </form>
+    </div>
+  )
 }
 
 const Table = ({results}) => {
@@ -66,7 +106,7 @@ const Table = ({results}) => {
         <span className='mdCol'>Recent</span>
         <span className='mdCol'>All Time</span>
       </div>
-      {results.recent.map((item, index) =>
+      {results.map((item, index) =>
         <div key={item.username} className = 'table-row'>
           <span className='smCol'>{index + 1}</span>
           <span className='lgCol'>
