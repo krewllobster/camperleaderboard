@@ -13,9 +13,9 @@ class App extends Component {
     super(props);
 
     this.state = {
-      loading: false,
       results: {recent: [], all: []},
       selected: 'recent',
+      sort: 'recent',
     }
 
     this.recentPromise = this.recentPromise.bind(this);
@@ -23,6 +23,7 @@ class App extends Component {
     this.setResults = this.setResults.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.toggleSort = this.toggleSort.bind(this);
   }
 
   recentPromise = () => fetch(`${BASE_URL}/recent`);
@@ -30,15 +31,13 @@ class App extends Component {
 
   setResults(values) {
     this.setState({
-      loading: false,
       selected: 'recent',
+      sort: 'recent',
       results: {recent: values[0], alltime: values[1]},
     })
   }
 
   fetchResults() {
-    this.setState({loading: true});
-
     Promise.all([this.recentPromise(), this.allPromise()])
       .then(responses =>
         Promise.all(responses.map(res => res.json()))
@@ -51,26 +50,36 @@ class App extends Component {
     })
   }
 
+  toggleSort(event) {
+    this.setState({
+      sort: event.target.value
+    })
+  }
+
   componentDidMount() {
     this.fetchResults();
   }
 
   render() {
 
-    const {loading, selected, results} = this.state;
+    const {selected, results, sort} = this.state;
 
     return (
       <div className = "container">
         <Buttons onClick = {this.onClick} selected = {selected}/>
-        <Table results = {results[selected]} />
+        <Table
+          results = {results[selected]}
+          sort = {sort}
+          toggleSort = {this.toggleSort} />
       </div>
     );
   }
 }
 
-const Button = ({selected, onClick, value, children}) => {
+const Button = ({selected, onClick, value, children, cName}) => {
+
   const butClass = classNames(
-    'button',
+    cName,
     {'button-active': selected === value}
   )
   return (
@@ -89,6 +98,7 @@ const Buttons = ({selected, onClick}) => {
         selected = {selected}
         onClick = {onClick}
         value = "recent"
+        cName = "button"
       >
         View top FCC'ers from last 30 days
       </Button>
@@ -96,6 +106,7 @@ const Buttons = ({selected, onClick}) => {
         selected = {selected}
         onClick = {onClick}
         value = "alltime"
+        cName = "button"
       >
         View all time top FCC'ers
       </Button>
@@ -103,25 +114,44 @@ const Buttons = ({selected, onClick}) => {
   )
 }
 
-const Table = ({results}) => {
+const Table = ({results, sort, toggleSort}) => {
 
   return (
     <div className = 'table'>
       <div className = 'table-header'>
         <span className='smCol'>#</span>
         <span className='lgCol'>Username</span>
-        <span className='mdCol'>Recent</span>
-        <span className='mdCol'>All Time</span>
+        <span className='mdCol'>
+          <Button
+            selected = {sort}
+            onClick = {toggleSort}
+            value = "recent"
+            cName = "button-inline"
+          >
+            Recent
+          </Button>
+        </span>
+        <span className='mdCol'>
+          <Button
+            selected = {sort}
+            onClick = {toggleSort}
+            value = "alltime"
+            cName = "button-inline"
+          >
+            All Time
+          </Button>
+        </span>
       </div>
-      {results.map((item, index) =>
+      {sortBy(results, [sort]).reverse().map((item, index) =>
         <div key={item.username} className = 'table-row'>
           <span className='smCol'>{index + 1}</span>
           <span className='lgCol'>
-            <img src={item.img}/>
+            <img src={item.img} alt={`${item.username}'s avatar`}/>
             <span className = 'username' >
               <a
                 href={`${FCC_URL}/${item.username}`}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 {item.username}
               </a>
