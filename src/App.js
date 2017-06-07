@@ -81,12 +81,16 @@ const Buttons = ({selected, onClick}) => {
         className = "button-inline"
         onClick = {onClick}
         value = "recent"
-      >Recent</button>
+      >
+        View top FCC'ers from last 30 days
+      </button>
       <button
         className = "button-inline"
         onClick = {onClick}
         value = "alltime"
-      >All Time</button>
+      >
+        View all time top FCC'ers
+      </button>
     </div>
   )
 }

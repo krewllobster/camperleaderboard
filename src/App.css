@@ -51,7 +51,7 @@
   color: inherit;
   text-align: inherit;
   -webkit-font-smoothing: inherit;
-  padding: 0;
+  padding: 5px;
   font-size: inherit;
   cursor: pointer;
 }
