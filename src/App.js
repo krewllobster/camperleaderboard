@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
 import './App.css';
 
-const BASE_URL = 'https://fcctop100.herokuapp.com/api/fccusers/top'
+const BASE_URL = 'https://fcctop100.herokuapp.com/api/fccusers/top';
+const FCC_URL = 'https://www.freecodecamp.com'
 
 class App extends Component {
 
@@ -13,14 +14,13 @@ class App extends Component {
       loading: false,
       results: {recent: [], all: []},
       selected: 'recent',
-      current: [],
     }
 
     this.recentPromise = this.recentPromise.bind(this);
     this.allPromise = this.allPromise.bind(this);
     this.setResults = this.setResults.bind(this);
     this.fetchResults = this.fetchResults.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   recentPromise = () => fetch(`${BASE_URL}/recent`);
@@ -31,7 +31,6 @@ class App extends Component {
       loading: false,
       selected: 'recent',
       results: {recent: values[0], alltime: values[1]},
-      current: values[0],
     })
   }
 
@@ -44,11 +43,9 @@ class App extends Component {
       ).then(texts => this.setResults(texts))
   }
 
-  onChange(event) {
-    const curr = this.state.results[event.target.value]
+  onClick(event) {
     this.setState({
-      selected: event.target.value,
-      current: curr,
+      selected: event.target.value
     })
   }
 
@@ -58,40 +55,38 @@ class App extends Component {
 
   render() {
 
-    const {loading, selected, current} = this.state;
+    const {loading, selected, results} = this.state;
 
     return (
       <div className = "container">
-        <Buttons onChange = {this.onChange} selected = {selected}/>
-        <Table results = {current} />
+        <Buttons onClick = {this.onClick} selected = {selected}/>
+        <Table results = {results[selected]} />
       </div>
     );
   }
 }
 
-const Buttons = ({selected, onChange}) => {
+const Button = ({onClick, className, value='', active=false, children}) => {
+  <button
+    className = {className}
+    onClick = {onClick}
+  > {children} </button>
+}
+
+const Buttons = ({selected, onClick}) => {
+
   return (
     <div>
-      <form>
-        <label class="radio-inline">
-          <input
-            type="radio"
-            value="recent"
-            name="optradio"
-            checked={selected === 'recent'}
-            onChange = {onChange}
-          />Recent
-        </label>
-        <label class="radio-inline">
-          <input
-            type="radio"
-            value = "alltime"
-            name="optradio"
-            checked={selected === 'alltime'}
-            onChange = {onChange}
-          />All Time
-        </label>
-      </form>
+      <button
+        className = "button-inline"
+        onClick = {onClick}
+        value = "recent"
+      >Recent</button>
+      <button
+        className = "button-inline"
+        onClick = {onClick}
+        value = "alltime"
+      >All Time</button>
     </div>
   )
 }
@@ -111,12 +106,18 @@ const Table = ({results}) => {
           <span className='smCol'>{index + 1}</span>
           <span className='lgCol'>
             <img src={item.img}/>
-            <span className = 'username' > {item.username} </span>
+            <span className = 'username' >
+              <a
+                href={`${FCC_URL}/${item.username}`}
+                target="_blank"
+              >
+                {item.username}
+              </a>
+            </span>
           </span>
           <span className='mdCol'>{item.recent}</span>
           <span className='mdCol'>{item.alltime}</span>
-        </div>
-      )}
+        </div>)}
     </div>
   )
 }
