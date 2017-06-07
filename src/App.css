@@ -1,9 +1,6 @@
-.page {
-  margin: 20px;
-}
-
-.interactions {
-  text-align: center;
+.header {
+  margin: 10px 0 0 0;
+  width: 100%;
 }
 
 .table {
@@ -37,32 +34,27 @@
 .table-row > span {
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 5px;
+  padding: 0 5px 0 5px;
 }
 
 .table-row > span > img {
   height: 30px;
   border-radius: 5px;
+  margin-right: 5px;
 }
 
-.button-inline {
+.button {
   border: 1px solid #e3e3e3;
-  background: transparent;
-  color: inherit;
-  text-align: inherit;
-  -webkit-font-smoothing: inherit;
-  padding: 5px;
-  font-size: inherit;
-  cursor: pointer;
+  border-radius: 0;
+  background: #e3e3e3;
+  color: black;
+  width: 50%;
 }
 
 .button-active {
+  background: transparent;
   border-radius: 0;
   border-bottom: 1px solid #38BB6C;
-}
-
-.loading {
-  margin-top: 20px;
 }
 
 .smCol {width: 10%;}

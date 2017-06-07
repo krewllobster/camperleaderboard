@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
+import { sortBy } from 'lodash';
+import classNames from 'classnames';
 import './App.css';
 
 const BASE_URL = 'https://fcctop100.herokuapp.com/api/fccusers/top';
@@ -66,31 +68,37 @@ class App extends Component {
   }
 }
 
-const Button = ({onClick, className, value='', active=false, children}) => {
-  <button
-    className = {className}
-    onClick = {onClick}
-  > {children} </button>
+const Button = ({selected, onClick, value, children}) => {
+  const butClass = classNames(
+    'button',
+    {'button-active': selected === value}
+  )
+  return (
+    <button
+      className = {butClass}
+      onClick = {onClick}
+      value = {value}
+    >{children}</button>
+  )
 }
 
 const Buttons = ({selected, onClick}) => {
-
   return (
-    <div>
-      <button
-        className = "button-inline"
+    <div className = 'header'>
+      <Button
+        selected = {selected}
         onClick = {onClick}
         value = "recent"
       >
         View top FCC'ers from last 30 days
-      </button>
-      <button
-        className = "button-inline"
+      </Button>
+      <Button
+        selected = {selected}
         onClick = {onClick}
         value = "alltime"
       >
         View all time top FCC'ers
-      </button>
+      </Button>
     </div>
   )
 }
